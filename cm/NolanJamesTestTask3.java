@@ -369,23 +369,6 @@ public class NolanJamesTestTask3 {
 
     // Calculation tests begin here
 
-    // Test Case 23
-    @org.junit.Test
-    public void calcTest() {
-
-        ArrayList<Period> calcReducedPeriods = new ArrayList<Period>();
-        ArrayList<Period> calcNormalPeriods = new ArrayList<Period>();
-
-        calcReducedPeriods.add(new Period(7, 9));
-        calcReducedPeriods.add(new Period(17, 22));
-        calcNormalPeriods.add(new Period(10, 16));
-        calcNormalPeriods.add(new Period(0, 6));
-
-        Rate rate = new Rate(CarParkKind.STAFF, new BigDecimal(5), new BigDecimal(3), calcReducedPeriods, calcNormalPeriods);
-
-        assertEquals(new BigDecimal(6.00), rate.calculate(new Period(7, 9)));
-    }
-
     // Test Case 24
     @org.junit.Test(expected = IllegalArgumentException.class)
     public void negativePeriod() {
