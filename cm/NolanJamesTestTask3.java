@@ -11,6 +11,7 @@ import org.junit.Before;
 import static org.junit.Assert.assertEquals;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.math.RoundingMode;
 
 public class NolanJamesTestTask3 {
 
@@ -382,7 +383,7 @@ public class NolanJamesTestTask3 {
 
         Rate rate = new Rate(CarParkKind.STAFF, new BigDecimal(5), new BigDecimal(3), calcReducedPeriods, calcNormalPeriods);
 
-        assertEquals(new BigDecimal(15), rate.calculate(new Period(11, 14)));
+        assertEquals(new BigDecimal(6.00), rate.calculate(new Period(7, 9)));
     }
 
     // Test Case 24
@@ -504,5 +505,58 @@ public class NolanJamesTestTask3 {
 
         new Rate(CarParkKind.STAFF, new BigDecimal(5), new BigDecimal(3), reducedPeriods, normalPeriods);
     }
+
+    //Spec Change
+
+    //Result without discount being applied
+    @org.junit.Test(expected = AssertionError.class)
+    public void visitorNoDiscountApplied() {
+
+        ArrayList<Period> reducedPeriod = new ArrayList<Period>();
+        ArrayList<Period> normalPeriod = new ArrayList<Period>();
+
+        reducedPeriod.add(new Period(7, 9));
+        reducedPeriod.add(new Period(17, 22));
+        normalPeriod.add(new Period(10, 16));
+        normalPeriod.add(new Period(0, 6));
+
+        Rate rate = new Rate(CarParkKind.VISITOR, new BigDecimal(5), new BigDecimal(3), reducedPeriod, normalPeriod);
+
+        assertEquals(new BigDecimal(6.00), rate.calculate(new Period(7, 9)));
+
+    }
+
+    // Visitor rate under 8
+    @org.junit.Test
+    public void visitorUnder8() {
+
+        ArrayList<Period> reducedPeriod = new ArrayList<Period>();
+        ArrayList<Period> normalPeriod = new ArrayList<Period>();
+
+        reducedPeriod.add(new Period(7, 9));
+        reducedPeriod.add(new Period(17, 22));
+        normalPeriod.add(new Period(10, 16));
+        normalPeriod.add(new Period(0, 6));
+
+        Rate rate = new Rate(CarParkKind.VISITOR, new BigDecimal(5), new BigDecimal(3), reducedPeriod, normalPeriod);
+        assertEquals(new BigDecimal(0.00).setScale(2, RoundingMode.HALF_UP), rate.calculate(new Period(9, 11)));
+    }
+
+    // Visitor rate over 8
+    @org.junit.Test
+    public void visitorOver8() {
+
+        ArrayList<Period> reducedPeriod = new ArrayList<Period>();
+        ArrayList<Period> normalPeriod = new ArrayList<Period>();
+
+        reducedPeriod.add(new Period(7, 9));
+        reducedPeriod.add(new Period(17, 22));
+        normalPeriod.add(new Period(10, 16));
+        normalPeriod.add(new Period(0, 6));
+
+        Rate rate = new Rate(CarParkKind.VISITOR, new BigDecimal(6), new BigDecimal(5), reducedPeriod, normalPeriod);
+        assertEquals(new BigDecimal(1.00).setScale(2, RoundingMode.HALF_UP), rate.calculate(new Period(7, 9)));
+    }
+
 
 }
