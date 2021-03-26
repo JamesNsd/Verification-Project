@@ -493,7 +493,7 @@ public class NolanJamesTestTask3 {
 
     //Result without discount being applied
     @org.junit.Test(expected = AssertionError.class)
-    public void visitorNoDiscountApplied() {
+    public void visNoDiscountApplied() {
 
         ArrayList<Period> reducedPeriod = new ArrayList<Period>();
         ArrayList<Period> normalPeriod = new ArrayList<Period>();
@@ -540,6 +540,187 @@ public class NolanJamesTestTask3 {
         Rate rate = new Rate(CarParkKind.VISITOR, new BigDecimal(6), new BigDecimal(5), reducedPeriod, normalPeriod);
         assertEquals(new BigDecimal(1.00).setScale(2, RoundingMode.HALF_UP), rate.calculate(new Period(7, 9)));
     }
+    // Management without discount
+    @org.junit.Test(expected = AssertionError.class)
+    public void manMinPaymentNotApplied() {
+
+        ArrayList<Period> reducedPeriod = new ArrayList<Period>();
+        ArrayList<Period> normalPeriod = new ArrayList<Period>();
+
+        reducedPeriod.add(new Period(7, 9));
+        reducedPeriod.add(new Period(17, 22));
+        normalPeriod.add(new Period(10, 16));
+        normalPeriod.add(new Period(0, 6));
+
+        Rate rate = new Rate(CarParkKind.MANAGEMENT, new BigDecimal(6), new BigDecimal(5), reducedPeriod, normalPeriod);
+        assertEquals(new BigDecimal(0.00).setScale(2, RoundingMode.HALF_UP), rate.calculate(new Period(22, 23)));
+    }
+
+    // Management with discount on a normal period
+    @org.junit.Test
+    public void manMinPaymentNormalPeriod() {
+
+        ArrayList<Period> reducedPeriod = new ArrayList<Period>();
+        ArrayList<Period> normalPeriod = new ArrayList<Period>();
+
+        reducedPeriod.add(new Period(7, 9));
+        reducedPeriod.add(new Period(17, 22));
+        normalPeriod.add(new Period(10, 16));
+        normalPeriod.add(new Period(0, 6));
+
+        Rate rate = new Rate(CarParkKind.MANAGEMENT, new BigDecimal(6), new BigDecimal(3), reducedPeriod, normalPeriod);
+
+        assertEquals(new BigDecimal(18.00).setScale(2, RoundingMode.HALF_UP), rate.calculate(new Period(12, 15)));
+    }
+
+    // Management with discount on a reduced period
+    @org.junit.Test
+    public void manMinPaymentReducedPeriod() {
+
+        ArrayList<Period> reducedPeriod = new ArrayList<Period>();
+        ArrayList<Period> normalPeriod = new ArrayList<Period>();
+
+        reducedPeriod.add(new Period(7, 9));
+        reducedPeriod.add(new Period(17, 22));
+        normalPeriod.add(new Period(10, 16));
+        normalPeriod.add(new Period(0, 6));
+
+        Rate rate = new Rate(CarParkKind.MANAGEMENT, new BigDecimal(6), new BigDecimal(3), reducedPeriod, normalPeriod);
+
+        assertEquals(new BigDecimal(6.00).setScale(2, RoundingMode.HALF_UP), rate.calculate(new Period(18, 20)));
+    }
+
+    // Management with discount on normal and reduced period combined
+    @org.junit.Test
+    public void manMinPaymentCombinedPeriod() {
+
+        ArrayList<Period> reducedPeriod = new ArrayList<Period>();
+        ArrayList<Period> normalPeriod = new ArrayList<Period>();
+
+        reducedPeriod.add(new Period(7, 9));
+        reducedPeriod.add(new Period(17, 22));
+        normalPeriod.add(new Period(10, 16));
+        normalPeriod.add(new Period(0, 6));
+
+        Rate rate = new Rate(CarParkKind.MANAGEMENT, new BigDecimal(6), new BigDecimal(3), reducedPeriod, normalPeriod);
+
+        assertEquals(new BigDecimal(12.00).setScale(2, RoundingMode.HALF_UP), rate.calculate(new Period(15, 19)));
+    }
+
+    // Student discount under 5.50
+    @org.junit.Test
+    public void studentUnderDiscount() {
+
+        ArrayList<Period> reducedPeriod = new ArrayList<Period>();
+        ArrayList<Period> normalPeriod = new ArrayList<Period>();
+
+        reducedPeriod.add(new Period(7, 9));
+        reducedPeriod.add(new Period(17, 22));
+        normalPeriod.add(new Period(10, 16));
+        normalPeriod.add(new Period(0, 6));
+
+        Rate rate = new Rate(CarParkKind.STUDENT, new BigDecimal(6), new BigDecimal(3), reducedPeriod, normalPeriod);
+
+        assertEquals(new BigDecimal(3.00).setScale(2, RoundingMode.HALF_UP), rate.calculate(new Period(7, 8)));
+    }
+
+    // Student discount under 5.50 with 25% reduction
+    @org.junit.Test(expected = AssertionError.class)
+    public void studentUnderDiscountWithRed() {
+
+        ArrayList<Period> reducedPeriod = new ArrayList<Period>();
+        ArrayList<Period> normalPeriod = new ArrayList<Period>();
+
+        reducedPeriod.add(new Period(7, 9));
+        reducedPeriod.add(new Period(17, 22));
+        normalPeriod.add(new Period(10, 16));
+        normalPeriod.add(new Period(0, 6));
+
+        Rate rate = new Rate(CarParkKind.STUDENT, new BigDecimal(6), new BigDecimal(3), reducedPeriod, normalPeriod);
+
+        assertEquals(new BigDecimal(2.25).setScale(2, RoundingMode.HALF_UP), rate.calculate(new Period(7, 8)));
+    }
+
+    // Student discount over 5.50
+    @org.junit.Test
+    public void studentOverDiscount() {
+
+        ArrayList<Period> reducedPeriod = new ArrayList<Period>();
+        ArrayList<Period> normalPeriod = new ArrayList<Period>();
+
+        reducedPeriod.add(new Period(7, 9));
+        reducedPeriod.add(new Period(17, 22));
+        normalPeriod.add(new Period(10, 16));
+        normalPeriod.add(new Period(0, 6));
+
+        Rate rate = new Rate(CarParkKind.STUDENT, new BigDecimal(6), new BigDecimal(3), reducedPeriod, normalPeriod);
+        assertEquals(new BigDecimal(10.38).setScale(2, RoundingMode.HALF_UP), rate.calculate(new Period(1, 3)));
+    }
+
+    // Student discount over 5.50 without reduction
+    @org.junit.Test(expected = AssertionError.class)
+    public void studentOverDiscountWithoutRed() {
+
+        ArrayList<Period> reducedPeriod = new ArrayList<Period>();
+        ArrayList<Period> normalPeriod = new ArrayList<Period>();
+
+        reducedPeriod.add(new Period(7, 9));
+        reducedPeriod.add(new Period(17, 22));
+        normalPeriod.add(new Period(10, 16));
+        normalPeriod.add(new Period(0, 6));
+
+        Rate rate = new Rate(CarParkKind.STUDENT, new BigDecimal(6), new BigDecimal(3), reducedPeriod, normalPeriod);
+        assertEquals(new BigDecimal(18.00).setScale(2, RoundingMode.HALF_UP), rate.calculate(new Period(1, 4)));
+    }
+
+    // Under Staff max limit
+    @org.junit.Test
+    public void underStaffMaxLimit() {
+
+        ArrayList<Period> reducedPeriod = new ArrayList<Period>();
+        ArrayList<Period> normalPeriod = new ArrayList<Period>();
+
+        reducedPeriod.add(new Period(7, 9));
+        reducedPeriod.add(new Period(17, 22));
+        normalPeriod.add(new Period(10, 16));
+        normalPeriod.add(new Period(0, 6));
+
+        Rate rate = new Rate(CarParkKind.STAFF, new BigDecimal(6), new BigDecimal(3), reducedPeriod, normalPeriod);
+        assertEquals(new BigDecimal(12.00).setScale(2, RoundingMode.HALF_UP), rate.calculate(new Period(1, 3)));
+    }
+
+    // Under Staff max limit with limit applied
+    @org.junit.Test
+    public void overStaffMaxLimit() {
+
+        ArrayList<Period> reducedPeriod = new ArrayList<Period>();
+        ArrayList<Period> normalPeriod = new ArrayList<Period>();
+
+        reducedPeriod.add(new Period(7, 9));
+        reducedPeriod.add(new Period(17, 22));
+        normalPeriod.add(new Period(10, 16));
+        normalPeriod.add(new Period(0, 6));
+
+        Rate rate = new Rate(CarParkKind.STAFF, new BigDecimal(6), new BigDecimal(3), reducedPeriod, normalPeriod);
+        assertEquals(new BigDecimal(16.00).setScale(2, RoundingMode.HALF_UP), rate.calculate(new Period(1, 5)));
+    }
+
+    // Under staff max limit without limit applied
+    @org.junit.Test(expected = AssertionError.class)
+    public void overStaffMaxLimitWithoutLimit() {
+
+        ArrayList<Period> reducedPeriod = new ArrayList<Period>();
+        ArrayList<Period> normalPeriod = new ArrayList<Period>();
+
+        reducedPeriod.add(new Period(7, 9));
+        reducedPeriod.add(new Period(17, 22));
+        normalPeriod.add(new Period(10, 16));
+        normalPeriod.add(new Period(0, 6));
+
+        Rate rate = new Rate(CarParkKind.STAFF, new BigDecimal(6), new BigDecimal(3), reducedPeriod, normalPeriod);
+        assertEquals(new BigDecimal(24.00).setScale(2, RoundingMode.HALF_UP), rate.calculate(new Period(1, 5)));
+    }
+
 
 
 }
